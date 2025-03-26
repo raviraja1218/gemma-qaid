@@ -151,7 +151,7 @@ if uploaded_file:
     st.header("7. AlphaFold Integration (Planned)")
     st.write("Gemma-QAID will predict protein-ligand binding using AlphaFold data.")
     # Updated image URL to a reliable source
-    st.image("https://alphafold.ebi.ac.uk/static/images/alphafold_logo.png", caption="AlphaFold Logo (Placeholder for Protein Structure)")
+    st.image("https://raw.githubusercontent.com/raviraja1218/gemma-qaid/main/protein.png", caption="AlphaFold Logo (Placeholder for Protein Structure)")
 
     # 8. Documentation Section
     st.header("8. Documentation")
