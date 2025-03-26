@@ -1,4 +1,0 @@
-python3.10
-cmake
-libboost-all-dev
-rdkit
