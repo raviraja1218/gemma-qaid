@@ -1,7 +1,5 @@
-streamlit
+streamlit==1.44.0
 pandas
-rdkit-pypi
+rdkit-pypi==2022.9.5
 plotly
-google-generativeai==0.8.4
-protobuf==4.25.3
-grpcio==1.67.1
+google-generativeai
