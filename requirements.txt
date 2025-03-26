@@ -1,5 +1,5 @@
 streamlit==1.44.0
 pandas
-rdkit-pypi==2022.9.5
+rdkit
 plotly
-google-generativeai
+
