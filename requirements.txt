@@ -1,5 +1,5 @@
 streamlit
 pandas
-rdkit
+rdkit-pypi
 plotly
-tensorflow-datasets
+google-generativeai
