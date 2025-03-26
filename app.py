@@ -144,7 +144,7 @@ if uploaded_file:
     # 6. Colab Button
     st.header("6. Run in Colab")
     # Using the most recent Colab URL provided
-    colab_url = "https://colab.research.google.com/drive/1WY1D8GsuW5f1A2C7XW7cFPubz1lN6-?authuser=0#scrollTo=hnwuehCEv79"
+    colab_url = "https://colab.research.google.com/drive/1kEIp93iBuvk54C1LBAMfJLMxFlWoL376#scrollTo=ySqLK_zkl8uj"
     st.markdown(f'<a href="{colab_url}" target="_blank"><button style="background-color: #ff00ff; color: white; padding: 10px 20px; border-radius: 5px;">Run in Colab</button></a>', unsafe_allow_html=True)
 
     # 7. AlphaFold Integration (Planned)
