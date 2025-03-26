@@ -143,14 +143,15 @@ if uploaded_file:
 
     # 6. Colab Button
     st.header("6. Run in Colab")
-    # Using the most recent Colab URL provided
+    # Updated Colab URL
     colab_url = "https://colab.research.google.com/drive/1kEIp93iBuvk54C1LBAMfJLMxFlWoL376#scrollTo=ySqLK_zkl8uj"
     st.markdown(f'<a href="{colab_url}" target="_blank"><button style="background-color: #ff00ff; color: white; padding: 10px 20px; border-radius: 5px;">Run in Colab</button></a>', unsafe_allow_html=True)
 
     # 7. AlphaFold Integration (Planned)
     st.header("7. AlphaFold Integration (Planned)")
     st.write("Gemma-QAID will predict protein-ligand binding using AlphaFold data.")
-    st.image("https://alphafold.ebi.ac.uk/files/AF-P00533-F1-model_v4.png", caption="Example AlphaFold Protein Structure")
+    # Updated image URL to a reliable source
+    st.image("https://alphafold.ebi.ac.uk/static/images/alphafold_logo.png", caption="AlphaFold Logo (Placeholder for Protein Structure)")
 
     # 8. Documentation Section
     st.header("8. Documentation")
@@ -165,7 +166,7 @@ if uploaded_file:
 
     ### Requirements
     - Python 3.8+
-    - Libraries: `streamlit`, `pandas`, `rdkit`, `plotly`, `tensorflow-datasets`, `google-generativeai`
+    - Libraries: `streamlit`, `pandas`, `rdkit`, `plotly`
 
     For more details, view the source code on [GitHub](https://github.com/raviraja1218/gemma-qaid).
     """)
