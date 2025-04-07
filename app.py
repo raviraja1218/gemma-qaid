@@ -35,6 +35,11 @@ st.markdown("""
         background-color: #333333;
         color: white;
     }
+    #viewer {
+        width: 600px;
+        height: 400px;
+        position: relative;
+    }
     #atom-details {
         color: #00ccff;
         font-size: 16px;
@@ -84,7 +89,7 @@ if uploaded_file:
         mime="text/csv"
     )
 
-    # 2. 3D Molecule Visualization (Using 3Dmol.js with Click Interactivity)
+    # 2. 3D Molecule Visualization (Using 3Dmol.js with Fixed Zoom, Rotate, and Click)
     st.header("2. 3D Molecule Visualization")
     selected_smiles = st.selectbox("Select a molecule to visualize:", processed_df['SMILES'])
     mol = Chem.MolFromSmiles(selected_smiles)
@@ -127,7 +132,7 @@ if uploaded_file:
     html3d = f"""
         <div style="height: 400px;" id="viewer"></div>
         <div id="atom-details">Click an atom to see its details.</div>
-        <script src="https://3Dmol.org/build/3Dmol.js"></script>
+        <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
         <script>
           let element = document.getElementById("viewer");
           let config = {{ backgroundColor: "black" }};
@@ -146,6 +151,9 @@ if uploaded_file:
             }}
           }});
 
+          // Ensure zoom and rotate are enabled
+          viewer.enableZoom(true);
+          viewer.enableRotate(true);
           viewer.render();
         </script>
     """
