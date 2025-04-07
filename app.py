@@ -89,7 +89,7 @@ if uploaded_file:
         mime="text/csv"
     )
 
-    # 2. 3D Molecule Visualization (Using 3Dmol.js with Fixed Zoom, Rotate, and Click)
+    # 2. 3D Molecule Visualization (Using 3Dmol.js with Fixed Rendering)
     st.header("2. 3D Molecule Visualization")
     selected_smiles = st.selectbox("Select a molecule to visualize:", processed_df['SMILES'])
     mol = Chem.MolFromSmiles(selected_smiles)
@@ -126,38 +126,47 @@ if uploaded_file:
             xyz += f"{atom.GetSymbol()} {pos.x:.3f} {pos.y:.3f} {pos.z:.3f}\n"
         return xyz
 
+    # Generate XYZ data and validate
     xyz_data = mol_to_xyz(mol)
-    # Pass atom details directly to JavaScript (without st.json)
+    # Debug: Display XYZ data to ensure it's correct
+    st.write("Debug: XYZ Data for 3D Visualization")
+    st.text(xyz_data)
+
+    # Pass atom details directly to JavaScript
     atom_details_json = str(atom_details).replace("'", '"')  # Convert to JSON string
     html3d = f"""
         <div style="height: 400px;" id="viewer"></div>
         <div id="atom-details">Click an atom to see its details.</div>
-        <script src="https://3dmol.csb.pitt.edu/build/3Dmol-min.js"></script>
+        <script src="https://unpkg.com/3dmol@2.1.0/build/3Dmol-min.js"></script>
         <script>
-          let element = document.getElementById("viewer");
-          let config = {{ backgroundColor: "black" }};
-          let viewer = $3Dmol.createViewer(element, config);
-          viewer.addModel(`{xyz_data}`, "xyz");
-          viewer.setStyle({{}}, {{stick:{{}}}});
-          viewer.zoomTo();
+          try {{
+            let element = document.getElementById("viewer");
+            let config = {{ backgroundColor: "black" }};
+            let viewer = $3Dmol.createViewer(element, config);
+            viewer.addModel(`{xyz_data}`, "xyz");
+            viewer.setStyle({{}}, {{stick:{{}}}});
+            viewer.zoomTo();
 
-          // Make atoms clickable
-          viewer.setClickable({{}}, true, function(atom) {{
-            let details = {atom_details_json};
-            let atomInfo = details.find(a => a.index === atom.index);
-            if (atomInfo) {{
-              let detailDiv = document.getElementById("atom-details");
-              detailDiv.innerHTML = `Atom: ${{atomInfo.symbol}} (${{atomInfo.name}})<br>Atomic Number: ${{atomInfo.atomic_number}}<br>Atomic Mass: ${{atomInfo.mass}}`;
-            }}
-          }});
+            // Make atoms clickable
+            viewer.setClickable({{}}, true, function(atom) {{
+              let details = {atom_details_json};
+              let atomInfo = details.find(a => a.index === atom.index);
+              if (atomInfo) {{
+                let detailDiv = document.getElementById("atom-details");
+                detailDiv.innerHTML = `Atom: ${{atomInfo.symbol}} (${{atomInfo.name}})<br>Atomic Number: ${{atomInfo.atomic_number}}<br>Atomic Mass: ${{atomInfo.mass}}`;
+              }}
+            }});
 
-          // Ensure zoom and rotate are enabled
-          viewer.enableZoom(true);
-          viewer.enableRotate(true);
-          viewer.render();
+            // Ensure zoom and rotate are enabled
+            viewer.enableZoom(true);
+            viewer.enableRotate(true);
+            viewer.render();
 
-          // Debug: Log to confirm viewer initialization
-          console.log("3Dmol.js viewer initialized");
+            // Debug: Log to confirm viewer initialization
+            console.log("3Dmol.js viewer initialized successfully");
+          }} catch (error) {{
+            console.error("Error initializing 3Dmol.js viewer:", error);
+          }}
         </script>
     """
     st.components.v1.html(html3d, height=450)
