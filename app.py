@@ -127,8 +127,8 @@ if uploaded_file:
         return xyz
 
     xyz_data = mol_to_xyz(mol)
-    # Pass atom details to JavaScript
-    atom_details_json = st.json(atom_details)
+    # Pass atom details directly to JavaScript (without st.json)
+    atom_details_json = str(atom_details).replace("'", '"')  # Convert to JSON string
     html3d = f"""
         <div style="height: 400px;" id="viewer"></div>
         <div id="atom-details">Click an atom to see its details.</div>
@@ -155,6 +155,9 @@ if uploaded_file:
           viewer.enableZoom(true);
           viewer.enableRotate(true);
           viewer.render();
+
+          // Debug: Log to confirm viewer initialization
+          console.log("3Dmol.js viewer initialized");
         </script>
     """
     st.components.v1.html(html3d, height=450)
