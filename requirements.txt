@@ -3,6 +3,7 @@ pandas
 rdkit
 plotly
 torch
-git+https://github.com/3dmol/py3Dmol.git
+py3Dmol @ https://files.pythonhosted.org/packages/42/fe/6b0eea2a16aa0f43d7c4466dd8de1277f969f82b5296a6a620f8c55c257d/py3Dmol-1.8.0-py3-none-any.whl
+
 
 
