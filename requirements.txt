@@ -3,6 +3,7 @@ pandas
 rdkit
 plotly
 torch
-ppy3dmol==2.1.0
+py3dmol==2.1.0
+
 
 
