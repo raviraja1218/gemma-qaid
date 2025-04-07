@@ -9,6 +9,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+# Removed: import py3dmol (no longer needed)
 
 # Streamlit page configuration
 st.set_page_config(page_title="Gemma-QAID", layout="wide", page_icon="🧬")
@@ -34,16 +35,6 @@ st.markdown("""
     .stTextInput>div>input, .stSelectbox>div>div {
         background-color: #333333;
         color: white;
-    }
-    #viewer {
-        width: 600px;
-        height: 400px;
-        position: relative;
-    }
-    #atom-details {
-        color: #00ccff;
-        font-size: 16px;
-        margin-top: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -89,34 +80,13 @@ if uploaded_file:
         mime="text/csv"
     )
 
-    # 2. 3D Molecule Visualization (Using 3Dmol.js with Fixed Rendering)
+    # 2. 3D Molecule Visualization (Using 3Dmol.js)
     st.header("2. 3D Molecule Visualization")
     selected_smiles = st.selectbox("Select a molecule to visualize:", processed_df['SMILES'])
     mol = Chem.MolFromSmiles(selected_smiles)
     mol = Chem.AddHs(mol)
     AllChem.EmbedMolecule(mol, randomSeed=42)
     AllChem.MMFFOptimizeMolecule(mol)
-
-    # Prepare atom details for JavaScript
-    atom_details = []
-    for atom in mol.GetAtoms():
-        symbol = atom.GetSymbol()
-        idx = atom.GetIdx()
-        # Simulated properties (in real app, fetch from PubChem API)
-        properties = {
-            "N": {"name": "Nitrogen", "atomic_number": 7, "mass": 14.007},
-            "C": {"name": "Carbon", "atomic_number": 6, "mass": 12.011},
-            "O": {"name": "Oxygen", "atomic_number": 8, "mass": 15.999},
-            "H": {"name": "Hydrogen", "atomic_number": 1, "mass": 1.008}
-        }
-        props = properties.get(symbol, {"name": "Unknown", "atomic_number": "N/A", "mass": "N/A"})
-        atom_details.append({
-            "index": idx,
-            "symbol": symbol,
-            "name": props["name"],
-            "atomic_number": props["atomic_number"],
-            "mass": props["mass"]
-        })
 
     def mol_to_xyz(mol):
         num_atoms = mol.GetNumAtoms()
@@ -126,51 +96,22 @@ if uploaded_file:
             xyz += f"{atom.GetSymbol()} {pos.x:.3f} {pos.y:.3f} {pos.z:.3f}\n"
         return xyz
 
-    # Generate XYZ data and validate
     xyz_data = mol_to_xyz(mol)
-    # Debug: Display XYZ data to ensure it's correct
-    st.write("Debug: XYZ Data for 3D Visualization")
-    st.text(xyz_data)
-
-    # Pass atom details directly to JavaScript
-    atom_details_json = str(atom_details).replace("'", '"')  # Convert to JSON string
     html3d = f"""
         <div style="height: 400px;" id="viewer"></div>
-        <div id="atom-details">Click an atom to see its details.</div>
-        <script src="https://unpkg.com/3dmol@2.1.0/build/3Dmol-min.js"></script>
+        <script src="https://3Dmol.org/build/3Dmol.js"></script>
         <script>
-          try {{
-            let element = document.getElementById("viewer");
-            let config = {{ backgroundColor: "black" }};
-            let viewer = $3Dmol.createViewer(element, config);
-            viewer.addModel(`{xyz_data}`, "xyz");
-            viewer.setStyle({{}}, {{stick:{{}}}});
-            viewer.zoomTo();
-
-            // Make atoms clickable
-            viewer.setClickable({{}}, true, function(atom) {{
-              let details = {atom_details_json};
-              let atomInfo = details.find(a => a.index === atom.index);
-              if (atomInfo) {{
-                let detailDiv = document.getElementById("atom-details");
-                detailDiv.innerHTML = `Atom: ${{atomInfo.symbol}} (${{atomInfo.name}})<br>Atomic Number: ${{atomInfo.atomic_number}}<br>Atomic Mass: ${{atomInfo.mass}}`;
-              }}
-            }});
-
-            // Ensure zoom and rotate are enabled
-            viewer.enableZoom(true);
-            viewer.enableRotate(true);
-            viewer.render();
-
-            // Debug: Log to confirm viewer initialization
-            console.log("3Dmol.js viewer initialized successfully");
-          }} catch (error) {{
-            console.error("Error initializing 3Dmol.js viewer:", error);
-          }}
+          let element = document.getElementById("viewer");
+          let config = {{ backgroundColor: "black" }};
+          let viewer = $3Dmol.createViewer(element, config);
+          viewer.addModel(`{xyz_data}`, "xyz");
+          viewer.setStyle({{}}, {{stick:{{}}}});
+          viewer.zoomTo();
+          viewer.render();
         </script>
     """
-    st.components.v1.html(html3d, height=450)
-    st.markdown("<p style='color: #00ccff;'>Tip: Click and drag to rotate the molecule, scroll to zoom, click an atom to see its details.</p>", unsafe_allow_html=True)
+    st.components.v1.html(html3d, height=400)
+    st.markdown("<p style='color: #00ccff;'>Tip: Click and drag to rotate the molecule, scroll to zoom.</p>", unsafe_allow_html=True)
 
     # 3. Fine-Tuning with a Real Model
     st.header("3. Fine-Tuning with Quantum-Inspired Optimization")
@@ -266,11 +207,11 @@ if uploaded_file:
     st.write("""
     ### How to Use Gemma-QAID
     1. **Upload a Dataset:** Upload a CSV file containing SMILES strings (e.g., `qm9_subset.csv`) to process molecular data.
-    2. **Visualize Molecules:** Select a molecule to view its 3D structure. Click and drag to rotate, scroll to zoom, and click an atom to see its details (name, atomic number, mass).
+    2. **Visualize Molecules:** Select a molecule to view its 3D structure. Click and drag to rotate, scroll to zoom. (Enhanced features like click-to-view atom details and protein-ligand context will be added during GSoC using Py3Dmol.)
     3. **Fine-Tune Model:** Adjust the learning rate and number of epochs, then click "Start Fine-Tuning" to fine-tune a neural network.
     4. **View Training Progress:** Check the training loss curve and time comparison graphs.
     5. **Run in Colab:** Use the Colab link to run the app in Google Colab.
-    6. **Future Features:** Gemini API integration and AlphaFold for protein-ligand binding predictions are planned. Enhanced 3D visualization with Py3Dmol (e.g., grey/red boxes for protein-ligand context) will be added during GSoC.
+    6. **Future Features:** Gemini API integration and AlphaFold for protein-ligand binding predictions are planned.
 
     ### Requirements
     - Python 3.8+
@@ -286,7 +227,7 @@ if uploaded_file:
     - **Gemini API Restrictions:** Due to regional restrictions in India, I couldn’t integrate the Gemini API. I added a placeholder section with a planned insight example.
     - **AlphaFold Image Loading:** I faced issues loading protein structure images due to server restrictions. I used the AlphaFold logo as a placeholder.
     - **Simulated Fine-Tuning:** I implemented actual fine-tuning using PyTorch, adding interactive hyperparameter tuning.
-    - **3D Visualization:** Initially used Py3Dmol for enhanced features (zoom, rotate, atom-click details), but faced deployment issues on Streamlit Cloud. Reverted to 3Dmol.js for stable deployment, adding click-to-view atom details. I plan to integrate Py3Dmol during GSoC for advanced features like grey/red boxes for protein-ligand context.
+    - **3D Visualization:** Initially used Py3Dmol for enhanced features (zoom, rotate, atom-click details), but faced deployment issues on Streamlit Cloud. Reverted to 3Dmol.js for stable deployment, with plans to integrate Py3Dmol during GSoC for advanced interactivity.
     - **Deployment:** Deployed on Streamlit Cloud and integrated with Colab for accessibility.
 
     This project showcases my ability to tackle challenges and align with DeepMind’s mission.
